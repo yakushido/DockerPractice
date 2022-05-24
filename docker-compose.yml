@@ -1,8 +1,5 @@
 version: '3.9'
 
-volumes: 
-  mysql-store:
-
 services:
 
 # ---------------------------------
@@ -12,9 +9,13 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+    # ports:
+    #   - 80:80
     container_name: laravel_app
+    links:
+      - db
     volumes:
-      - ./src/:/app
+      - ./src/:/var/www/html
 
 # ---------------------------------
 # MySQLを動かすコンテナ
@@ -31,12 +32,9 @@ services:
       MYSQL_USER: root@localhost
       MYSQL_PASSWORD: yaku
       MYSQL_ROOT_PASSWORD: root
-      TZ: 'Asia/Tokyo'
     volumes:
-      - mysql-volume:/var/lib/mysql
-
-  volumes:
-  mysql-volume:
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/db/my.cnf:/etc/mysql/conf.d
 
 # ---------------------------------
 # nginxを動かすコンテナ
@@ -46,7 +44,7 @@ services:
       context: .
       dockerfile: ./docker/web/Dockerfile
     ports:
-      - 8080:80
+      - "8000:80"
     depends_on:
       - app
     volumes:
