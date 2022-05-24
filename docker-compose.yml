@@ -1,12 +1,14 @@
 version: '3.9'
 
+volumes: 
+  mysql-store:
+
 services:
 
 # ---------------------------------
 # laravelを動かすコンテナ
 # ---------------------------------
   app:
-    ports: -'80:80'
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
@@ -21,6 +23,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/db/Dockerfile
+    container_name: laravel_db
     ports:
       - 3306:3306
     environment:
